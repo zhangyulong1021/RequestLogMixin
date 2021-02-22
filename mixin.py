@@ -1,5 +1,4 @@
 import json
-import logging
 from deepdiff import DeepDiff
 from django.db.models import QuerySet
 from django.http import JsonResponse, HttpResponse
@@ -12,19 +11,7 @@ from autobutler_open.common.db.models import BaseModel
 from rest_framework.response import Response
 
 from autobutler_open.common.serializers import JSONEncoder
-
-logger = logging.getLogger(__name__)
-
-
-def get_logger():
-    logger_ = logger
-    fh = logging.FileHandler("/tmp/admin_user_operate_log.log")
-    fh.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(message)s")
-    fh.setFormatter(formatter)
-    logger_.handlers = [fh]
-    return logger_
-
+from custom_logger import logger
 
 class OperateLogMixin:
     """记录用户对接口操作日志"""
@@ -66,8 +53,7 @@ class OperateLogMixin:
             "is_manager": kwargs.get("is_manager"),
             "create_time": timezone.localtime().strftime("%Y-%m-%d %H:%M:%S"),
         }
-        logger_ = get_logger()
-        logger_.info(json.dumps(row, ensure_ascii=False, cls=JSONEncoder))
+        logger.info(json.dumps(row, ensure_ascii=False, cls=JSONEncoder))
 
     @classmethod
     def get_serializer_data(cls, request, queryset, serializer_class, **kwargs):
